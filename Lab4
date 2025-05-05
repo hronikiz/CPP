@@ -1,0 +1,86 @@
+#include <iostream>
+#include <string>
+#include <list>
+
+template <typename T>
+class FruitGarden {
+protected:
+    std::string name;    
+    T parameter;         
+    double productivity; 
+
+public:
+    FruitGarden(const std::string& name, T parameter, double productivity)
+        : name(name), parameter(parameter), productivity(productivity) {}
+
+    virtual void print() const = 0;
+
+    std::string getName() const { return name; }
+    T getParameter() const { return parameter; }
+    double getProductivity() const { return productivity; }
+
+    void setName(const std::string& name) { this->name = name; }
+    void setParameter(T parameter) { this->parameter = parameter; }
+    void setProductivity(double productivity) { this->productivity = productivity; }
+};
+
+template <typename T>
+class TreeCountGarden : public FruitGarden<T> {
+public:
+    TreeCountGarden(const std::string& name, T treeCount, double productivity)
+        : FruitGarden<T>(name, treeCount, productivity) {}
+
+    void print() const override {
+        std::cout << "Сад: " << this->name
+                  << ", Количество деревьев: " << this->parameter
+                  << ", Урожайность: " << this->productivity << " кг/дерево" << std::endl;
+    }
+};
+
+template <typename T>
+class AreaGarden : public FruitGarden<T> {
+public:
+    AreaGarden(const std::string& name, T area, double productivity)
+        : FruitGarden<T>(name, area, productivity) {}
+
+    void print() const override {
+        std::cout << "Сад: " << this->name
+                  << ", Площадь: " << this->parameter << " га"
+                  << ", Урожайность: " << this->productivity << " т/га" << std::endl;
+    }
+};
+
+int main() {
+    std::list<FruitGarden<double>*> gardens;
+    
+    TreeCountGarden<double>* garden1 = new TreeCountGarden<double>("Яблоневый сад", 500, 25.5);
+    AreaGarden<double>* garden2 = new AreaGarden<double>("Грушевый сад", 2.5, 15.3);
+    AreaGarden<double>* garden3 = new AreaGarden<double>("Вишневый сад", 1.8, 12.7);
+    TreeCountGarden<double>* garden4 = new TreeCountGarden<double>("Сливовый сад", 350, 18.2);
+    
+    gardens.push_back(garden1);
+    gardens.push_back(garden2);
+    gardens.push_back(garden3);
+    gardens.push_back(garden4);
+    
+    std::cout << "=== Список садов ===" << std::endl;
+    for (const auto& garden : gardens) {
+        garden->print();
+    }
+    
+    std::cout << "\nДобавляем новый сад:" << std::endl;
+    TreeCountGarden<double>* garden5 = new TreeCountGarden<double>("Абрикосовый сад", 200, 30.0);
+    gardens.push_back(garden5);
+    garden5->print();
+    
+    std::cout << "\n=== Обновленный список садов ===" << std::endl;
+    for (const auto& garden : gardens) {
+        garden->print();
+    }
+    
+    for (auto& garden : gardens) {
+        delete garden;
+    }
+    
+    return 0;
+}
