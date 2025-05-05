@@ -1,0 +1,119 @@
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
+class Point {
+protected:
+    double x, y;
+
+public:
+    Point(double x_val = 0, double y_val = 0) : x(x_val), y(y_val) {
+        std::cout << "Point created at coordinates (" << x << ", " << y << ")" << std::endl;
+    }
+
+    double getX() const { return x; }
+    double getY() const { return y; }
+
+    void setX(double x_val) { x = x_val; }
+    void setY(double y_val) { y = y_val; }
+
+    virtual void display() const {
+        std::cout << "Point coordinates: (" << x << ", " << y << ")" << std::endl;
+    }
+};
+
+class Circle : public Point {
+protected:
+    double radius;
+
+public:
+    Circle(double x_val = 0, double y_val = 0, double r = 1.0)
+        : Point(x_val, y_val), radius(r) {
+        std::cout << "Circle created with radius " << radius << std::endl;
+    }
+
+    double getRadius() const { return radius; }
+
+    void setRadius(double r) { radius = r; }
+
+    double getArea() const {
+        return M_PI * radius * radius;
+    }
+
+    void display() const override {
+        std::cout << "Circle: center at (" << x << ", " << y << "), radius = " << radius << std::endl;
+        std::cout << "Circle area: " << getArea() << std::endl;
+    }
+};
+
+class Bowl : public Circle {
+private:
+    double height;
+    double maxFillHeight;
+
+public:
+    Bowl(double x_val = 0, double y_val = 0, double r = 1.0, double h = 0.5)
+        : Circle(x_val, y_val, r), height(h) {
+        maxFillHeight = 0.9 * height;
+        std::cout << "Bowl created with height " << height << " and maximum fill height " << maxFillHeight << std::endl;
+    }
+
+    double getHeight() const { return height; }
+    double getMaxFillHeight() const { return maxFillHeight; }
+
+    double getVolume() const {
+        return (1.0 / 3.0) * M_PI * height * height * (3 * radius - height);
+    }
+
+    double getMaxSoupVolume() const {
+        return (1.0 / 3.0) * M_PI * maxFillHeight * maxFillHeight * (3 * radius - maxFillHeight);
+    }
+
+    double remainingSoupVolume(const Bowl& smallerBowl) const {
+        double initialVolume = getMaxSoupVolume();
+        double smallerBowlVolume = smallerBowl.getMaxSoupVolume();
+
+        return (initialVolume > smallerBowlVolume) ? (initialVolume - smallerBowlVolume) : 0;
+    }
+
+    void display() const override {
+        std::cout << "Bowl: center at (" << x << ", " << y << "), radius = " << radius
+            << ", height = " << height << std::endl;
+        std::cout << "Maximum fill height: " << maxFillHeight << std::endl;
+        std::cout << "Total bowl volume: " << std::fixed << std::setprecision(2) << getVolume() << std::endl;
+        std::cout << "Maximum soup volume: " << std::fixed << std::setprecision(2) << getMaxSoupVolume() << std::endl;
+    }
+};
+
+int main() {
+    setlocale(LC_ALL, ""); // Locale can be left empty for English
+    std::cout << "Creating a point:" << std::endl;
+    Point p(1.0, 2.0);
+    p.display();
+    std::cout << std::endl;
+
+    std::cout << "Creating a circle:" << std::endl;
+    Circle c(0.0, 0.0, 5.0);
+    c.display();
+    std::cout << std::endl;
+
+    std::cout << "Creating a large bowl:" << std::endl;
+    Bowl largeBowl(0.0, 0.0, 10.0, 5.0);
+    largeBowl.display();
+    std::cout << std::endl;
+
+    std::cout << "Creating a small bowl:" << std::endl;
+    Bowl smallBowl(0.0, 0.0, 7.0, 3.5);
+    smallBowl.display();
+    std::cout << std::endl;
+
+    double remainingSoup = largeBowl.remainingSoupVolume(smallBowl);
+    std::cout << "After pouring soup from the large bowl into the small one:" << std::endl;
+    std::cout << "Remaining soup volume in the large bowl: " << std::fixed << std::setprecision(2)
+        << remainingSoup << " cubic units" << std::endl;
+
+    return 0;
+}
