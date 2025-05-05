@@ -54,9 +54,9 @@ int main() {
     std::list<FruitGarden<double>*> gardens;
     
     TreeCountGarden<double>* garden1 = new TreeCountGarden<double>("Яблоневый сад", 500, 25.5);
-    AreaGarden<double>* garden2 = new AreaGarden<double>("Грушевый сад", 2.5, 15.3);
-    AreaGarden<double>* garden3 = new AreaGarden<double>("Вишневый сад", 1.8, 12.7);
-    TreeCountGarden<double>* garden4 = new TreeCountGarden<double>("Сливовый сад", 350, 18.2);
+    TreeCountGarden<double>* garden2 = new TreeCountGarden<double>("Сливовый сад", 350, 18.2);
+    AreaGarden<double>* garden3 = new AreaGarden<double>("Грушевый сад", 2.5, 15.3);
+    AreaGarden<double>* garden4 = new AreaGarden<double>("Вишневый сад", 1.8, 12.7);
     
     gardens.push_back(garden1);
     gardens.push_back(garden2);
