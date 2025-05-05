@@ -1,0 +1,124 @@
+#include <iostream>
+#include <stdexcept>
+
+class Integer {
+private:
+    int value;
+    static const int MIN_VALUE = -128;
+    static const int MAX_VALUE = 128;
+
+public:
+    Integer() : value(0) {}
+
+    Integer(int val) {
+        if (val < MIN_VALUE || val > MAX_VALUE) {
+            std::cerr << "Ошибка: значение вне допустимого диапазона [-128, 128]" << std::endl;
+            value = 0;
+        }
+        else {
+            value = val;
+        }
+    }
+
+    int getValue() const {
+        return value;
+    }
+
+    void setValue(int val) {
+        if (val < MIN_VALUE || val > MAX_VALUE) {
+            std::cerr << "Ошибка: значение вне допустимого диапазона [-128, 128]" << std::endl;
+        }
+        else {
+            value = val;
+        }
+    }
+
+    Integer& operator++() {
+        if (value < MAX_VALUE) {
+            ++value;
+        }
+        else {
+            std::cerr << "Ошибка: инкремент приведет к выходу за пределы диапазона" << std::endl;
+        }
+        return *this;
+    }
+
+    Integer operator++(int) {
+        Integer temp = *this;
+        if (value < MAX_VALUE) {
+            value++;
+        }
+        else {
+            std::cerr << "Ошибка: инкремент приведет к выходу за пределы диапазона" << std::endl;
+        }
+        return temp;
+    }
+
+    Integer operator+(const Integer& other) const {
+        int result = value + other.value;
+        if (result < MIN_VALUE || result > MAX_VALUE) {
+            std::cerr << "Ошибка: результат сложения вне допустимого диапазона" << std::endl;
+            return Integer();
+        }
+        return Integer(result);
+    }
+
+    Integer operator-(const Integer& other) const {
+        int result = value - other.value;
+        if (result < MIN_VALUE || result > MAX_VALUE) {
+            std::cerr << "Ошибка: результат вычитания вне допустимого диапазона" << std::endl;
+            return Integer();
+        }
+        return Integer(result);
+    }
+
+    friend std::istream& operator>>(std::istream& is, Integer& obj) {
+        int val;
+        is >> val;
+        obj.setValue(val);
+        return is;
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const Integer& obj) {
+        os << obj.value;
+        return os;
+    }
+};
+
+int main() {
+    setlocale(LC_ALL, "Russian");
+    Integer a(100);
+    Integer b(20);
+
+    std::cout << "a = " << a << std::endl;
+    std::cout << "b = " << b << std::endl;
+
+    Integer c = a + b;
+    std::cout << "a + b = " << c << std::endl;
+
+    Integer d = a - b;
+    std::cout << "a - b = " << d << std::endl;
+
+    std::cout << "++a = " << ++a << std::endl;
+    std::cout << "a++ = " << a++ << std::endl;
+    std::cout << "a после a++ = " << a << std::endl;
+
+    Integer e(127);
+    std::cout << "e = " << e << std::endl;
+    std::cout << "++e = ";
+    ++e;
+    std::cout << e << std::endl;
+
+    Integer f(128);
+    std::cout << "f = " << f << std::endl;
+    std::cout << "++f = ";
+    ++f;
+    std::cout << f << std::endl;
+
+    Integer g;
+    std::cout << "Введите значение для g: ";
+    std::cin >> g;
+    std::cout << "g = " << g << std::endl;
+
+    return 0;
+}
