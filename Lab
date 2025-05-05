@@ -1,1 +1,489 @@
+#include <iostream>
 
+#include <fstream>
+
+#include <string>
+
+#include <vector>
+
+#include <algorithm>
+
+
+
+class Building {
+
+private:
+
+    std::string address;
+
+    int floors;
+
+    int apartments;
+
+    std::string regNumber;
+
+
+
+public:
+
+    Building() {
+
+        address = "";
+
+        floors = 0;
+
+        apartments = 0;
+
+        regNumber = "";
+
+    }
+
+
+
+    Building(std::string addr, int flrs, int apts, std::string reg) {
+
+        address = addr;
+
+        floors = flrs;
+
+        apartments = apts;
+
+        regNumber = reg;
+
+    }
+
+
+
+    ~Building() {
+
+        std::cout << "Building object at address " << address << " destroyed" << std::endl;
+
+    }
+
+
+
+    void setAddress(std::string addr) { address = addr; }
+
+    void setFloors(int flrs) { floors = flrs; }
+
+    void setApartments(int apts) { apartments = apts; }
+
+    void setRegNumber(std::string reg) { regNumber = reg; }
+
+
+
+    std::string getAddress() const { return address; }
+
+    int getFloors() const { return floors; }
+
+    int getApartments() const { return apartments; }
+
+    std::string getRegNumber() const { return regNumber; }
+
+
+
+    void display() const {
+
+        std::cout << "Building at: " << address << std::endl;
+
+        std::cout << "Floors: " << floors << std::endl;
+
+        std::cout << "Apartments: " << apartments << std::endl;
+
+        std::cout << "Registration Number: " << regNumber << std::endl;
+
+        std::cout << "------------------------" << std::endl;
+
+    }
+
+};
+
+
+
+void saveToFile(const std::vector<Building>& buildings, const std::string& filename) {
+
+    std::ofstream file(filename);
+
+    if (!file) {
+
+        std::cout << "Error opening file!" << std::endl;
+
+        return;
+
+    }
+
+    for (const auto& building : buildings) {
+
+        file << building.getAddress() << "," 
+
+             << building.getFloors() << "," 
+
+             << building.getApartments() << "," 
+
+             << building.getRegNumber() << std::endl;
+
+    }
+
+    file.close();
+
+    std::cout << "Data successfully saved to " << filename << std::endl;
+
+}
+
+
+
+void findByRegNumber(const std::vector<Building>& buildings, const std::string& regNumber) {
+
+    bool found = false;
+
+    for (const auto& building : buildings) {
+
+        if (building.getRegNumber() == regNumber) {
+
+            std::cout << "Found building with registration number " << regNumber << ":" << std::endl;
+
+            building.display();
+
+            found = true;
+
+            break;
+
+        }
+
+    }
+
+    if (!found) {
+
+        std::cout << "Building with registration number " << regNumber << " not found!" << std::endl;
+
+    }
+
+}
+
+
+
+int main() {
+
+    std::vector<Building> buildings;
+
+    int choice;
+
+    std::string filename = "buildings.txt";
+
+
+
+    do {
+
+        std::cout << "\nBuilding Management Menu:" << std::endl;
+
+        std::cout << "1) Input building elements from keyboard" << std::endl;
+
+        std::cout << "2) Display all buildings" << std::endl;
+
+        std::cout << "3) Sort by number of floors (descending)" << std::endl;
+
+        std::cout << "4) Display buildings with apartments more than X" << std::endl;
+
+        std::cout << "5) Add new building at the first position" << std::endl;
+
+        std::cout << "6) Delete building by address" << std::endl;
+
+        std::cout << "7) Save buildings to file" << std::endl;
+
+        std::cout << "8) Find building by registration number" << std::endl;
+
+        std::cout << "0) Exit" << std::endl;
+
+        std::cout << "Enter your choice: ";
+
+        std::cin >> choice;
+
+        std::cin.ignore(); 
+
+
+
+        switch (choice) {
+
+            case 1: {
+
+                std::string address, regNumber;
+
+                int floors, apartments;
+
+                
+
+                std::cout << "Enter address: ";
+
+                std::getline(std::cin, address);
+
+                
+
+                std::cout << "Enter number of floors: ";
+
+                std::cin >> floors;
+
+                
+
+                std::cout << "Enter number of apartments: ";
+
+                std::cin >> apartments;
+
+                
+
+                std::cin.ignore(); 
+
+                
+
+                std::cout << "Enter registration number: ";
+
+                std::getline(std::cin, regNumber);
+
+                
+
+                buildings.push_back(Building(address, floors, apartments, regNumber));
+
+                std::cout << "Building added successfully!" << std::endl;
+
+                break;
+
+            }
+
+            case 2: {
+
+                if (buildings.empty()) {
+
+                    std::cout << "No buildings to display!" << std::endl;
+
+                } else {
+
+                    std::cout << "\nList of all buildings:" << std::endl;
+
+                    for (const auto& building : buildings) {
+
+                        building.display();
+
+                    }
+
+                }
+
+                break;
+
+            }
+
+            case 3: {
+
+                if (buildings.empty()) {
+
+                    std::cout << "No buildings to sort!" << std::endl;
+
+                } else {
+
+                    std::sort(buildings.begin(), buildings.end(), 
+
+                        [](const Building& a, const Building& b) {
+
+                            return a.getFloors() > b.getFloors(); 
+
+                        });
+
+                    std::cout << "Buildings sorted by number of floors (descending order)!" << std::endl;
+
+                }
+
+                break;
+
+            }
+
+            case 4: {
+
+                if (buildings.empty()) {
+
+                    std::cout << "No buildings to display!" << std::endl;
+
+                } else {
+
+                    int x;
+
+                    std::cout << "Enter the minimum number of apartments (X): ";
+
+                    std::cin >> x;
+
+                    
+
+                    std::cout << "\nBuildings with more than " << x << " apartments:" << std::endl;
+
+                    bool found = false;
+
+                    
+
+                    for (const auto& building : buildings) {
+
+                        if (building.getApartments() > x) {
+
+                            building.display();
+
+                            found = true;
+
+                        }
+
+                    }
+
+                    
+
+                    if (!found) {
+
+                        std::cout << "No buildings found with more than " << x << " apartments!" << std::endl;
+
+                    }
+
+                }
+
+                break;
+
+            }
+
+            case 5: {
+
+                std::string address, regNumber;
+
+                int floors, apartments;
+
+                
+
+                std::cout << "Enter address for the new building: ";
+
+                std::getline(std::cin, address);
+
+                
+
+                std::cout << "Enter number of floors: ";
+
+                std::cin >> floors;
+
+                
+
+                std::cout << "Enter number of apartments: ";
+
+                std::cin >> apartments;
+
+                
+
+                std::cin.ignore(); 
+
+                
+
+                std::cout << "Enter registration number: ";
+
+                std::getline(std::cin, regNumber);
+
+                
+
+                buildings.insert(buildings.begin(), Building(address, floors, apartments, regNumber));
+
+                std::cout << "Building added to the first position successfully!" << std::endl;
+
+                break;
+
+            }
+
+            case 6: {
+
+                if (buildings.empty()) {
+
+                    std::cout << "No buildings to delete!" << std::endl;
+
+                } else {
+
+                    std::string addressToDelete;
+
+                    std::cout << "Enter the address of the building to delete: ";
+
+                    std::getline(std::cin, addressToDelete);
+
+                    
+
+                    auto it = std::find_if(buildings.begin(), buildings.end(),
+
+                        [&addressToDelete](const Building& b) {
+
+                            return b.getAddress() == addressToDelete;
+
+                        });
+
+                    
+
+                    if (it != buildings.end()) {
+
+                        buildings.erase(it);
+
+                        std::cout << "Building at address " << addressToDelete << " deleted successfully!" << std::endl;
+
+                    } else {
+
+                        std::cout << "Building with address " << addressToDelete << " not found!" << std::endl;
+
+                    }
+
+                }
+
+                break;
+
+            }
+
+            case 7: {
+
+                if (buildings.empty()) {
+
+                    std::cout << "No buildings to save!" << std::endl;
+
+                } else {
+
+                    saveToFile(buildings, filename);
+
+                }
+
+                break;
+
+            }
+
+            case 8: {
+
+                if (buildings.empty()) {
+
+                    std::cout << "No buildings to search!" << std::endl;
+
+                } else {
+
+                    std::string regNumber;
+
+                    std::cout << "Enter registration number to search: ";
+
+                    std::getline(std::cin, regNumber);
+
+                    findByRegNumber(buildings, regNumber);
+
+                }
+
+                break;
+
+            }
+
+            case 0:
+
+                std::cout << "Exiting program. Goodbye!" << std::endl;
+
+                break;
+
+            default:
+
+                std::cout << "Invalid choice! Please try again." << std::endl;
+
+        }
+
+    } while (choice != 0);
+
+
+
+    return 0;
+
+}
