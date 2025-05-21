@@ -1,68 +1,35 @@
 #include <iostream>
 #include <vector>
+#include <set>
 
-class Graph {
-private:
-    int V; 
-    std::vector<std::vector<int>> adj; 
-
-public:
-    Graph(int vertices) {
-        V = vertices;
-        adj.resize(V);
-    }
-
-    void addEdge(int u, int v) {
-        adj[u].push_back(v);
-        adj[v].push_back(u); 
-    }
-
-    bool dfs(int u, std::vector<bool>& visited, std::vector<int>& matching) {
-        for (int v : adj[u]) {
-            if (!visited[v]) {
-                visited[v] = true;
-                if (matching[v] == -1 || dfs(matching[v], visited, matching)) {
-                    matching[v] = u;
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    // Функция для поиска максимального паросочетания
-    int maxMatching() {
-        std::vector<int> matching(V, -1); // matching[i] = j означает, что вершина i соединена с вершиной j
-        int result = 0;
-
-        for (int u = 0; u < V; u++) {
-            std::vector<bool> visited(V, false);
-            if (dfs(u, visited, matching)) {
-                result++;
-            }
-        }
-
-        return result / 2; // Каждое ребро учтено дважды
-    }
-};
+using namespace std;
 
 int main() {
-    int V, E;
-    std::cout << "Введите количество вершин: ";
-    std::cin >> V;
-    std::cout << "Введите количество рёбер: ";
-    std::cin >> E;
+    int n, m;
+    cout << "Введите количество вершин и рёбер: ";
+    cin >> n >> m;
 
-    Graph g(V);
-
-    std::cout << "Введите " << E << " пар вершин (нумерация с 0): " << std::endl;
-    for (int i = 0; i < E; i++) {
-        int u, v;
-        std::cin >> u >> v;
-        g.addEdge(u, v);
+    vector<pair<int, int>> edges(m);
+    cout << "Введите рёбра:\n";
+    for (int i = 0; i < m; ++i) {
+        cin >> edges[i].first >> edges[i].second;
     }
 
-    std::cout << "Максимальное количество паросочетаний: " << g.maxMatching() << std::endl;
+    set<int> used;
+    vector<pair<int, int>> matching;
+
+    for (auto [u, v] : edges) {
+        if (used.count(u) == 0 && used.count(v) == 0) {
+            matching.emplace_back(u, v);
+            used.insert(u);
+            used.insert(v);
+        }
+    }
+
+    cout << "Максимальное паросочетание:\n";
+    for (auto [u, v] : matching) {
+        cout << u << " - " << v << "\n";
+    }
 
     return 0;
 }
