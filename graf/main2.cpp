@@ -1,36 +1,50 @@
 #include <iostream>
 #include <vector>
-
 using namespace std;
 
-void dfs(int v, vector<vector<int>>& graph, vector<bool>& visited) {
-    cout << "Посетили вершину: " << v << endl;
-    visited[v] = true;
+const int N = 101;
+vector<int> graph[N];
+int color[N];
 
+bool isSafe(int v, int c) {
     for (int u : graph[v]) {
-        if (!visited[u]) {
-            dfs(u, graph, visited); 
+        if (color[u] == c) return false;
+    }
+    return true;
+}
+
+bool graphColoring(int v, int n, int maxColors) {
+    if (v > n) return true;
+
+    for (int c = 1; c <= maxColors; c++) {
+        if (isSafe(v, c)) {
+            color[v] = c;
+            if (graphColoring(v + 1, n, maxColors))
+                return true;
+            color[v] = 0;
         }
     }
+    return false;
 }
 
 int main() {
-    int n, m;
-    cout << "Введите количество вершин и рёбер: ";
-    cin >> n >> m;
+    int n, m, k;
+    cin >> n >> m >> k;
 
-    vector<vector<int>> graph(n + 1);
-    cout << "Введите рёбра:\n";
-    for (int i = 0; i < m; ++i) {
+    for (int i = 0; i < m; i++) {
         int u, v;
         cin >> u >> v;
         graph[u].push_back(v);
-        graph[v].push_back(u); 
+        graph[v].push_back(u);
     }
 
-    vector<bool> visited(n + 1, false);
-    cout << "Обход в глубину с вершины 1:\n";
-    dfs(1, graph, visited);
+    if (graphColoring(1, n, k)) {
+        for (int i = 1; i <= n; i++) {
+            cout << "Вершина " << i << " -> Цвет " << color[i] << "\n";
+        }
+    } else {
+        cout << "Раскраска невозможна с " << k << " цветами.\n";
+    }
 
     return 0;
 }
